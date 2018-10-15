@@ -1,0 +1,125 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.js"></script>
+
+<script>
+const size = 100;
+const pixSize = 5;
+
+class Table {
+  constructor(size) {
+    this.size = size;
+    this.values = {}
+  }
+
+
+  forEach(fn) {
+    for (let x = 0; x < this.size; x++) {
+      for (let y = 0; y < this.size; y++) {
+        const i = this.index(x, y);
+        fn.call(this, this.get(i), [i, x, y], this)
+      }
+    }
+  }
+	
+	map(fn) {
+		const newTable = new Table(this.size)
+		
+		this.forEach(function(n, [i]) { newTable.set(i, n); })
+		
+		for (let x = 0; x < this.size; x++) {
+      for (let y = 0; y < this.size; y++) {
+        const i = this.index(x, y);
+        fn.call(newTable, this.get(i), [i, x, y], newTable)
+      }
+    }
+		
+		return newTable;
+	}
+
+  set(i, v) {
+    this.values[i] = v
+  }
+
+  get(i) {
+    return this.values[i] || 0
+  }
+
+	inc(i, v) {
+		this.set(i, (this.get(i) || 0) + v);
+	}
+
+	dec(i, v) {
+		this.inc(i, -v);
+	}
+
+  index(x, y) {
+  	const wx = wrap(x, 0, this.size - 1)
+  	const wy = wrap(y, 0, this.size - 1)
+    return wx + wy * this.size;
+  }
+}
+
+
+function wrap(n, a, b) {
+	if(n < a) {
+		return b;
+	} 
+	if(n > b) {
+		return a;
+	} 
+	return n;
+}
+
+let table;
+
+function setup() {
+	frameRate(60);
+  createCanvas(size * pixSize, size * pixSize);
+  table = new Table(size);
+
+  table.forEach(function(_, [i, x, y]) {
+    table.set(i, floor(random(0, 2)));
+  });
+	const drops = 100
+	 for(let i = 0; i < size; i++) {
+	 	table.set(table.index(i, i), drops)
+	 	table.set(table.index(i, size - i), drops)
+	 	table.set(table.index(i, floor(size / 2)), drops)
+	 	table.set(table.index(floor(size / 2), i), drops)
+	 } 
+	
+// 	table.set(table.index(50, 50), 100000)
+}
+
+function draw() {
+	
+	table = table.map(function(n, [i, x, y]) {
+    if (n > 3) {
+			this.dec(i, 4)
+			
+			this.inc(this.index(x + 1, y), 1);
+			this.inc(this.index(x, y + 1), 1);
+			this.inc(this.index(x - 1, y), 1);
+			this.inc(this.index(x, y - 1), 1);			
+		}
+  });
+	
+
+  background(51);
+	noStroke();
+
+	table.forEach(function(n, [i, x, y]) {
+// 		switch(n) {
+// 			case 0: fill('black'); break;
+// 			case 1: fill('green'); break;
+// 			case 2: fill('red'); break;
+// 			case 3: fill('orange'); break;
+// 			default: fill('yellow')
+// 		}
+		fill(0, map(n, 0, 8, 0, 255, true), 0)
+		noStroke()
+    rect(x * pixSize, y * pixSize, pixSize, pixSize)
+  });
+
+}
+
+</script>
