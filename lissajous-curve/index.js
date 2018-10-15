@@ -1,17 +1,29 @@
-const { cos, floor, min, PI, sin } = Math;
+const { cos, floor, PI, sin } = Math;
 const TWO_PI = 2 * PI;
 
-const size = 100;
-const width = window.innerWidth;
-const height = window.innerHeight;
-const cols = floor(width / size);
-const rows = floor(height / size);
-const curvesList = [];
+class Lissajous {
+  constructor(
+    size = 100,
+    width = window.innerWidth,
+    height = window.innerHeight,
+    cols = floor(width / size),
+    rows = floor(height / size)
+  ) {
+    this.size = size;
+    this.width = width;
+    this.height = height;
+    this.cols = cols;
+    this.rows = rows;
 
-let displayLines = true;
+    this.angle = 0;
+    this.delta_angle = 0.01;
+    this.displayLines = true;
 
-let angle = 0;
-let delta_angle = 0.002;
+    this.curves = [];
+  }
+}
+
+const app = new Lissajous();
 
 class Curve {
   constructor(a, b, x, y, size, showX = true, showY = true) {
@@ -36,22 +48,22 @@ class Curve {
   }
 
   updateBalls(layer) {
-    const x = this.r * sin(angle * this.a) + this.x;
-    const y = this.r * cos(angle * this.b) + this.y;
+    const x = this.r * sin(app.angle * this.a) + this.x;
+    const y = this.r * cos(app.angle * this.b) + this.y;
 
     layer.ellipse(x, y, 5);
 
-    if (this.showY && displayLines) {
-      layer.line(0, y, width, y);
+    if (this.showY && app.displayLines) {
+      layer.line(0, y, app.width, y);
     }
-    if (this.showX && displayLines) {
-      layer.line(x, 0, x, height);
+    if (this.showX && app.displayLines) {
+      layer.line(x, 0, x, app.height);
     }
   }
 
   updateCurves(layer) {
-    const x = this.r * sin(angle * this.a) + this.x;
-    const y = this.r * cos(angle * this.b) + this.y;
+    const x = this.r * sin(app.angle * this.a) + this.x;
+    const y = this.r * cos(app.angle * this.b) + this.y;
 
     layer.line(this.lastx, this.lasty, x, y);
 
@@ -60,14 +72,16 @@ class Curve {
   }
 }
 
-for (let i = 1; i < cols; i++) {
-  curvesList.push(new Curve(i, i, i * size, 0, size - 6, true, false));
+for (let i = 1; i < app.cols; i++) {
+  app.curves.push(new Curve(i, i, i * app.size, 0, app.size - 6, true, false));
 
-  for (let j = 1; j < rows; j++) {
+  for (let j = 1; j < app.rows; j++) {
     if (i === 1) {
-      curvesList.push(new Curve(j, j, 0, j * size, size - 6, false, true));
+      app.curves.push(
+        new Curve(j, j, 0, j * app.size, app.size - 6, false, true)
+      );
     }
-    curvesList.push(new Curve(i, j, i * size, j * size, size - 6));
+    app.curves.push(new Curve(i, j, i * app.size, j * app.size, app.size - 6));
   }
 }
 
@@ -75,38 +89,38 @@ const balls = new p5(BallLayer, byId("balls"));
 const curves = new p5(CurveLayer, byId("curves"));
 
 setInterval(() => {
-  if (angle > TWO_PI) {
+  if (app.angle > TWO_PI) {
     balls.noLoop();
     curves.noLoop();
   }
-  angle += delta_angle;
+  app.angle += app.delta_angle;
 }, 1000 / 60);
 
 window.addEventListener("keypress", e => {
   if (e.key === " ") {
-    delta_angle = 0;
+    app.delta_angle = 0;
   }
 });
 window.addEventListener("keyup", e => {
   if (e.key === " ") {
-    delta_angle = 0.002;
+    app.delta_angle = 0.002;
   }
   if (e.key === "Shift") {
-    displayLines = true;
+    app.displayLines = true;
   }
 });
 
 window.addEventListener("keydown", e => {
   if (e.key === "Shift") {
-    displayLines = false;
+    app.displayLines = false;
   }
 
   if (e.key === "Escape") {
-    angle = 0;
+    app.angle = 0;
     balls.loop();
     curves.loop();
     curves.background("darkslategray");
-    for (let curve of curvesList) {
+    for (let curve of app.curves) {
       curve.reset();
     }
   }
@@ -118,7 +132,7 @@ function byId(id) {
 
 function BallLayer(s) {
   s.setup = () => {
-    s.createCanvas(width, height);
+    s.createCanvas(app.width, app.height);
   };
 
   s.draw = () => {
@@ -126,7 +140,7 @@ function BallLayer(s) {
     s.fill("white");
     s.stroke("whitesmoke");
     s.strokeWeight(0.1);
-    for (curve of curvesList) {
+    for (curve of app.curves) {
       curve.updateBalls(s);
     }
   };
@@ -134,7 +148,7 @@ function BallLayer(s) {
 
 function CurveLayer(s) {
   s.setup = () => {
-    s.createCanvas(width, height);
+    s.createCanvas(app.width, app.height);
     s.background("darkslategray");
   };
 
@@ -142,7 +156,7 @@ function CurveLayer(s) {
     s.fill("white");
     s.stroke("white");
     s.strokeWeight(1);
-    for (curve of curvesList) {
+    for (curve of app.curves) {
       curve.updateCurves(s);
     }
   };
