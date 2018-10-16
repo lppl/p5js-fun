@@ -38,25 +38,25 @@ class SegmentDisplay {
     function move(x, y, fn) {
       return function() {
         translate(x, y);
-        fn.apply(arguments);
+        fn.apply(this, arguments);
         resetMatrix();
       };
     }
 
-    function horizontal() {
-      rect(0, 0, longer, shorter);
+    function horizontal(x, y) {
+      rect(x, y, longer, shorter);
     }
 
-    function vertical() {
-      rect(0, 0, shorter, longer);
+    function vertical(x, y) {
+      rect(x, y, shorter, longer);
     }
   }
 
-  print(n) {
+  print(n, x=0, y=0) {
     const d = Object.values(this.displays);
     for (let [i, v] of this.definition[n].entries()) {
       if (v) {
-        d[i]();
+        d[i](x, y);
       }
     }
   }
