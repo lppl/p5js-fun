@@ -1,0 +1,39 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css">
+
+<style>
+    div {
+        display: flex;
+        flex-flow: row nowrap;
+
+    }
+
+    ul {
+        width: 20vw;
+        height: 90vh;
+        list-style-type: none;
+        padding: 20px;
+        margin: 0;
+    }
+
+    iframe {
+        display: block;
+        width: 80vw;
+        height: 90vh;
+        padding: 0;
+        border: none;
+        margin: 0;
+    }
+</style>
+
+<div>
+    <ul>
+        <li><a target="display" href="./sand.html">sand</a>:<a
+                href="https://en.wikipedia.org/wiki/Abelian_sandpile_model">wiki</a></li>
+        <li><a target="display" href="./lissajous-curve/index.html">Lissajous curve</a>, <a
+                href="https://en.wikipedia.org/wiki/Lissajous_curve">wiki</a></li>
+        <li><a target="display" href="./seven/index.html">seven segment display</a>: <a
+                href="https://en.wikipedia.org/wiki/Seven-segment_display">wiki</a></li>
+    </ul>
+
+    <iframe id="display" name="display" src="sand.html"></iframe>
+</div>

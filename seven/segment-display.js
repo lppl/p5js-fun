@@ -1,11 +1,18 @@
 class SegmentDisplay {
-  constructor(shorter = 20, longer = 80) {
+  constructor(size = 1, shorter = 20, longer = 80, spread = 10) {
+    this.size = size;
     this.shorter = shorter;
     this.longer = longer;
+    this.spread = spread;
 
-    this.width = 2 * shorter + longer;
-    this.height = 3 * shorter + 2 * longer;
+    this.signWidth = 2 * shorter + longer;
+    this.signHeight = 3 * shorter + 2 * longer;
 
+    this.width = size * (this.signWidth + spread) + spread;
+    this.height = this.signHeight + 2 * spread;
+
+    const on = true;
+    const off = false;
     this.definition = {
       "0": [on, on, on, on, on, on, off],
       "1": [off, on, on, off, off, off, off],
@@ -52,11 +59,21 @@ class SegmentDisplay {
     }
   }
 
-  print(n, x=0, y=0) {
+  print(n) {
     const d = Object.values(this.displays);
-    for (let [i, v] of this.definition[n].entries()) {
-      if (v) {
-        d[i](x, y);
+
+    const num = n.toString();
+
+    for (let [i, s] of num.split("").entries()) {
+      const x =
+        (this.size - num.length + i) * (display.signWidth + this.spread) +
+        this.spread;
+      const y = this.spread;
+
+      for (let [i, v] of this.definition[s].entries()) {
+        if (v) {
+          d[i](x, y);
+        }
       }
     }
   }
