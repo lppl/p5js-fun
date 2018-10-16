@@ -8,14 +8,14 @@ class Lissajous {
     size = 100,
     width = window.innerWidth,
     height = window.innerHeight,
-    cols = floor(width / size),
-    rows = floor(height / size)
+    colNum = floor(width / size),
+    rowNum = floor(height / size)
   ) {
     this.size = size;
     this.width = width;
     this.height = height;
-    this.cols = cols;
-    this.rows = rows;
+    this.colNum = colNum;
+    this.rowNum = rowNum;
 
     this.angle = 0;
     this.delta_angle = 0.01;
@@ -36,19 +36,22 @@ class Lissajous {
   }
 
   setupCurves() {
-    for (let i = 1; i < this.cols; i++) {
+    for (let cols = 1; cols < this.colNum; cols++) {
       this.curves.push(
-        new Curve(i, i, i * this.size, 0, this.size - 6, true, false)
+        new Curve(cols, cols, cols * this.size, 0, this.size * .9, true, false)
       );
+    }
 
-      for (let j = 1; j < this.rows; j++) {
-        if (i === 1) {
-          this.curves.push(
-            new Curve(j, j, 0, j * this.size, this.size - 6, false, true)
-          );
-        }
+    for (let rows = 1; rows < this.rowNum; rows++) {
+      this.curves.push(
+        new Curve(rows, rows, 0, rows * this.size, this.size * .9, false, true)
+      );
+    }
+
+    for (let a = 1; a < this.colNum; a++) {
+      for (let b = 1; b < this.rowNum; b++) {
         this.curves.push(
-          new Curve(i, j, i * this.size, j * this.size, this.size - 6)
+          new Curve(a, b, a * this.size, b * this.size, this.size * .9)
         );
       }
     }
