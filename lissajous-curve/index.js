@@ -28,6 +28,8 @@ class Lissajous {
 
     this.ballsLayer.app = this;
     this.curvesLayer.app = this;
+
+    this.pause = false;
   }
 
   init() {
@@ -63,18 +65,20 @@ class Lissajous {
         this.ballsLayer.noLoop();
         this.curvesLayer.noLoop();
       }
-      this.angle += this.delta_angle;
+      if (!this.pause) {
+        this.angle += this.delta_angle;
+      }
     }, 1000 / 60);
 
     window.addEventListener("keypress", e => {
       if (e.key === " ") {
-        this.delta_angle = 0;
+        this.pause = true;
       }
     });
 
     window.addEventListener("keyup", e => {
       if (e.key === " ") {
-        this.delta_angle = 0.002;
+        this.pause = false;
       }
       if (e.key === "Shift") {
         this.displayLines = true;
